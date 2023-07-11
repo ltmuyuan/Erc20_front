@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "ethers": "5.7.2",
+    "ant-design-vue": "^3.2.15"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

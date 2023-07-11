@@ -1,15 +1,13 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <ContractOp></ContractOp>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import ContractOp from './components/ContractOp.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    ContractOp
   }
 }
 </script>
