@@ -10,7 +10,7 @@
         <a-input v-model:value="contractAddress"></a-input>
       </a-col>
       <a-col>
-        <a-button type="primary" @click="Confirm">confirm</a-button>
+        <a-button type="primary" @click="confirm">Confirm</a-button>
       </a-col>
     </a-row>
     <a-card title="Contract send">
