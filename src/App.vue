@@ -1,13 +1,13 @@
 <template>
-  <ContractOp></ContractOp>
+  <NFTTrade></NFTTrade>
 </template>
 
 <script>
-import ContractOp from './components/ContractOp.vue'
+import NFTTrade from './view/NFTTrade.vue';
 export default {
   name: 'App',
   components: {
-    ContractOp
+    NFTTrade
   }
 }
 </script>

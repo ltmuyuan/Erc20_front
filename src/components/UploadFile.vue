@@ -50,3 +50,8 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+.ant-upload.ant-upload-drag {
+  height:unset !important;
+}
+</style>

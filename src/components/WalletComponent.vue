@@ -3,6 +3,7 @@
     <a-button type="primary" @click="connectWallet" v-if="!isConnected">Connect wallet</a-button>
     <div v-else>
       <p>Connected wallet address:{{ account }}</p>
+      <p>Wallet balance:{{ balance }}</p>
       <button @click="disconnectWallet">Disconnect wallet</button>
     </div>
   </div>
@@ -13,6 +14,7 @@ import { ref, toRaw } from "vue";
 
 const isConnected = ref(false)
 const account = ref('')
+const balance = ref()
 const provider = ref(null)
 const emit = defineEmits(["provider"]);
 
@@ -23,6 +25,8 @@ const connectWallet = async () => {
       provider.value = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.value.getSigner();
       account.value = await signer.getAddress();
+      let b = await toRaw(provider.value).getBalance(account.value);
+      balance.value = ethers.utils.formatEther(b)
       isConnected.value = true;
       emit('provider', toRaw(provider.value));
     } catch (error) {
