@@ -21,6 +21,12 @@
         <a-button type="primary" :loading="loading" @click="confirm">Confirm</a-button>
       </a-col>
     </a-row>
+    <div>
+      {{ resultStatus }}
+    </div>
+    <div v-if="result">
+      <a :href="result" target="_blank">{{ result }}</a>
+    </div>
   </div>
 </template>
 
@@ -34,6 +40,8 @@ const whiteList = ref([{
   address: "",
 }]);
 const loading = ref(false);
+const result = ref("");
+const resultStatus = ref("");
 
 let abiData = [{
   "inputs": [
@@ -66,6 +74,8 @@ const minus = () => {
 
 const restore = () => {
   whiteList.value = [{ address: "" }];
+  result.value = ""; resultStatus
+  resultStatus.value = "";
 }
 
 const confirm = async () => {
@@ -74,8 +84,10 @@ const confirm = async () => {
   if (provider && list.length > 0) {
     loading.value = true
     let contractApi = createContractApi(contractAddress, abiData, provider);
-    let result = await contractApi.sendTransaction("addMembers", list);
-    console.log("result", result);
+    let res = await contractApi.sendTransaction("addMembers", list);
+    console.log("result", res);
+    resultStatus.value = res.status == 1 ? "Execution succeeded" : "Execution failed"
+    result.value = "https://etherscan.io/tx/" + res.transactionHash
     loading.value = false
   } else {
     message.error("error");

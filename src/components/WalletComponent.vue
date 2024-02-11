@@ -20,6 +20,10 @@ const connectWallet = async () => {
   if (typeof window.ethereum !== 'undefined') {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x1' }],
+      });
       provider.value = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.value.getSigner();
       account.value = await signer.getAddress();
