@@ -51,7 +51,7 @@ const confirm = () => {
     txList.value = abiData.filter(x => (x.type
       && x.type == 'function'
       && x.stateMutability
-      && (x.stateMutability == 'nonpayable' || x.stateMutability == 'pauable')
+      && (x.stateMutability == 'nonpayable' || x.stateMutability == 'payable')
     ));
     callList.value = abiData.filter(x => (x.type
       && x.type == 'function'

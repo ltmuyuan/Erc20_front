@@ -8,6 +8,7 @@
             <a-col :key="input.name" v-for="input in props.function.inputs">
               <a-input :placeholder="input.name" v-model:value="input.param" />
             </a-col>
+
           </a-row>
         </a-col>
         <a-col :span="2">
@@ -26,6 +27,7 @@
 </template>
 <script setup>
 import { ref } from "vue";
+import { utils } from 'ethers';
 const props = defineProps({
   function: Object,
   api: Object,
@@ -33,15 +35,24 @@ const props = defineProps({
 
 const loading = ref(false)
 
+const value = ref('');
+
 const submit = async () => {
   let func = props.function;
   console.log("api", func.inputs);
-  let params = func.inputs.map(t => t.param);
+  // let params = func.inputs.map(t => {
+  //   if (t.type == "address[]") {
+  //     return t.param.split(",")
+  //   } else {
+  //     return t.param
+  //   }
+  // });
+  let params = func.inputs.map(t => t.param)
   try {
     if (func.type
       && func.type == 'function'
       && func.stateMutability
-      && (func.stateMutability == 'nonpayable' || func.stateMutability == 'pauable')) {
+      && (func.stateMutability == 'nonpayable' || func.stateMutability == 'payable')) {
       loading.value = true;
       let result = await props.api.sendTransaction(func.name, ...params);
       func.outputs[0].result = result;

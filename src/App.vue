@@ -1,13 +1,15 @@
 <template>
-  <ContractOp></ContractOp>
+  <AddMember></AddMember>
 </template>
 
 <script>
-import ContractOp from './components/ContractOp.vue'
+//import ContractOp from './components/ContractOp.vue'
+import AddMember from './components/AddMember.vue';
 export default {
   name: 'App',
   components: {
-    ContractOp
+    //  ContractOp
+    AddMember
   }
 }
 </script>
