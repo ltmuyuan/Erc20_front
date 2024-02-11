@@ -11,7 +11,7 @@
         <a-button type="primary" @click="restore">restore</a-button>
       </a-col>
     </a-row>
-    <a-row v-bind:key="item.address" v-for="(item) in whiteList">
+    <a-row v-bind:key="index" v-for="(item, index) in whiteList">
       <a-col :span="23">
         <a-input @change="checkWhiteList(item)" v-model:value="item.address"></a-input>
       </a-col>
@@ -43,7 +43,7 @@ import WalletComponent from './WalletComponent.vue';
 import { createContractApi } from '../api/contractApi';
 import { message } from 'ant-design-vue';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons-vue';
-
+import { utils } from 'ethers';
 const whiteList = ref([{
   address: "",
 }]);
@@ -114,7 +114,7 @@ const restore = () => {
 const checkWhiteList = async (item) => {
   console.log("item", item.address)
   if (provider) {
-    if (item.address) {
+    if (item.address && utils.isAddress(item.address)) {
       let contractApi = createContractApi(contractAddress, abiData, provider);
       let num = await contractApi.query("discountList", item.address);
       console.log("num", num);
