@@ -11,9 +11,13 @@
         <a-button type="primary" @click="restore">restore</a-button>
       </a-col>
     </a-row>
-    <a-row v-bind:key="item.address" v-for="item in whiteList">
-      <a-col :span="24">
-        <a-input v-model:value="item.address"></a-input>
+    <a-row v-bind:key="item.address" v-for="(item) in whiteList">
+      <a-col :span="23">
+        <a-input @change="checkWhiteList(item)" v-model:value="item.address"></a-input>
+      </a-col>
+      <a-col :span="1">
+        <CheckCircleTwoTone two-tone-color="#52c41a" v-if="item.check" />
+        <CloseCircleTwoTone two-tone-color="#eb2f96" v-else />
       </a-col>
     </a-row>
     <a-row>
@@ -21,6 +25,9 @@
         <a-button type="primary" :loading="loading" @click="confirm">Confirm</a-button>
       </a-col>
     </a-row>
+    <div>
+      {{ errorMsg }}
+    </div>
     <div>
       {{ resultStatus }}
     </div>
@@ -35,6 +42,7 @@ import { ref } from 'vue';
 import WalletComponent from './WalletComponent.vue';
 import { createContractApi } from '../api/contractApi';
 import { message } from 'ant-design-vue';
+import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons-vue';
 
 const whiteList = ref([{
   address: "",
@@ -42,20 +50,43 @@ const whiteList = ref([{
 const loading = ref(false);
 const result = ref("");
 const resultStatus = ref("");
+const errorMsg = ref("");
 
-let abiData = [{
-  "inputs": [
+let abiData =
+  [
     {
-      "internalType": "address[]",
-      "name": "addrs",
-      "type": "address[]"
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "addrs",
+          "type": "address[]"
+        }
+      ],
+      "name": "addMembers",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "discountList",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
-  ],
-  "name": "addMembers",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-}];
+  ];
 
 let contractAddress = '0xBc4B1e8caC87872AA6970f4d396C778CAE4F4C1F'
 let provider = '';
@@ -74,24 +105,49 @@ const minus = () => {
 
 const restore = () => {
   whiteList.value = [{ address: "" }];
-  result.value = ""; resultStatus
+  result.value = "";
   resultStatus.value = "";
+  loading.value = false;
+  errorMsg.value = "";
+}
+
+const checkWhiteList = async (item) => {
+  console.log("item", item.address)
+  if (provider) {
+    if (item.address) {
+      let contractApi = createContractApi(contractAddress, abiData, provider);
+      let num = await contractApi.query("discountList", item.address);
+      console.log("num", num);
+      item.check = num.toNumber() == 0;
+    } else {
+      item.check = false;
+    }
+  } else {
+    message.error("not connected to wallet");
+  }
 }
 
 const confirm = async () => {
   let list = whiteList.value.filter(t => t.address).map(t => t.address);
   console.log("whiteList", list);
-  if (provider && list.length > 0) {
-    loading.value = true
-    let contractApi = createContractApi(contractAddress, abiData, provider);
-    let res = await contractApi.sendTransaction("addMembers", list);
-    console.log("result", res);
-    resultStatus.value = res.status == 1 ? "Execution succeeded" : "Execution failed"
-    result.value = "https://etherscan.io/tx/" + res.transactionHash
+  try {
+    if (provider && list.length > 0) {
+      loading.value = true
+      let contractApi = createContractApi(contractAddress, abiData, provider);
+      let res = await contractApi.sendTransaction("addMembers", list);
+      console.log("result", res);
+      resultStatus.value = res.status == 1 ? "Execution succeeded" : "Execution failed"
+      result.value = "https://etherscan.io/tx/" + res.transactionHash
+    } else {
+      message.error("not connected to wallet");
+    }
+  } catch (error) {
+    message.error(error.message);
+    errorMsg.value = error.message;
+  } finally {
     loading.value = false
-  } else {
-    message.error("error");
   }
+
 }
 
 </script>
